@@ -1,0 +1,26 @@
+@'
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+*.log
+
+# Env vars
+.env
+*.env
+
+# If you ever add ML/data later
+*.pkl
+*.joblib
+datasets/
+data/
+'@ | Set-Content -Encoding utf8 .gitignore

@@ -1,0 +1,117 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Search Bar -->
+    <form method="get" class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search...">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <!-- Category Buttons -->
+    <div class="mb-4">
+        <a href="{% url 'home' %}" class="btn btn-sm {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+        {% for category in categories %}
+            <a href="?category={{ category.name }}" class="btn btn-sm {% if selected_category == category.name %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Post Cards -->
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="max-height: 180px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ post.title|truncatewords:10 }}</h5>
+                    <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                    <p class="text-muted mt-auto">{{ post.date_posted|date:"d M, Y" }}</p>
+                    <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-outline-primary mt-2">Read More →</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p>No posts available.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4 text-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if posts.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ posts.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <a class="page-link">{{ posts.number }}</a>
+                </li>
+
+                {% if posts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ posts.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ posts.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+</div>
+<!-- Enquiry Modal -->
+<div class="modal fade" id="enquiryModal" tabindex="-1" aria-labelledby="enquiryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" action="{% url 'submit_enquiry' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="enquiryModalLabel">Submit Your Enquiry</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3"><input name="name" class="form-control" placeholder="Your Name" required></div>
+          <div class="mb-3"><input type="email" name="email" class="form-control" placeholder="Your Email" required></div>
+          <div class="mb-3"><textarea name="message" class="form-control" placeholder="Your Message" rows="4" required></textarea></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  setInterval(() => {
+    const modal = new bootstrap.Modal(document.getElementById('enquiryModal'));
+    modal.show();
+  }, 15000); // 15000 milliseconds = 15 seconds
+});
+</script>
+
+{% endblock %}
+
+
+
+
+
